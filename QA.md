@@ -2,25 +2,33 @@
 
 ## 结论
 
-本地源码修复与静态构建完成，**未达到全部线上验收目标**。远端仓库现已可访问，正在基于真实 main 提交修复分支与 PR。GitHub Actions 和正式部署结果待本轮运行后更新；目前没有成功上线证据。
+源码修复、Node.js 22 测试、构建与真实 Chromium 浏览器回归已完成；**正式部署尚未完成**。
 
-本次以附件 ZIP 为基线，保留三课、三个实验、九题和零运行依赖的静态站，没有从零重写。独立本地分支：`fix/course-final-qa`。
+- PR：https://github.com/dreamlong1/diffusion-course/pull/1 （保留待审核，没有自动合并）。
+- 已通过运行：https://github.com/dreamlong1/diffusion-course/actions/runs/38863766754 。测试源提交为 `62cad60dc6943b74fc4ac710097557c93f1ace65`；PR 工作流检出 GitHub 生成的合并预览提交。
+- 工作流 build 成功，deploy 按 PR 条件跳过，这是预期行为，不能作为已发布证据。
+- 2026-10-16 对正式目标六个路径检查均为 HTTP 404：`/`、`lessons/1/`、`lessons/2/`、`lessons/3/`、`glossary/`、`sources/`（均位于 `/diffusion-course/` 下）。
+- 现有 GitHub 连接支持分支、提交、PR 和 Actions 读写，但没有 Pages 设置操作。首次配置需管理员在 **Settings → Pages → Source → GitHub Actions** 完成。此前浏览器登录授权被取消，未重试或索取凭据。
+
+保留附件的三课、三个实验、九题与零运行依赖架构；修复分支 `fix/course-final-qa` 基于真实远端 main 的 `23cd78db64326d94aba9ab212a7d8d846b468399`，没有使用附件的合成历史覆盖远端。
 
 ## 本次实测结果
 
 | 检查 | 本次结果 | 实际覆盖 |
 |---|---|---|
-| Node.js 22.16.0 `npm test` | **37 项通过，0 失败，0 跳过** | 数学、构建、内链及锚点、脚本语法、发布保护、HTTP 服务、部署内容核验 |
-| Node.js 22.16.0 `npm run build` | **成功** | 六页及 404、三项资源、构建清单、完整单文件预览 |
-| 本地 HTTP 集成测试 | **通过** | 六页 200、资源 MIME、HEAD、未知路径 404、写请求 405 |
-| 发布核验器回归 | **通过** | 正确构建通过；旧提交、404、200 错误页面、JS 错误 MIME 被拒绝 |
-| Chromium 浏览器 | **启动失败，未验收** | Playwright 的 Chromium 134 与 headless shell 在进入网页前退出；独立诊断返回 SIGTRAP（-5），未取得本次截图或交互报告 |
-| GitHub Actions 真实运行 | **未执行** | 已加入 Chromium 单文件与真实 HTTP 回归，待运行 |
-| GitHub Pages | **未部署** | 没有成功运行或发布证据；首页仍 404 |
+| GitHub Actions Node.js **22.23.3** `npm test` | **37 项通过，0 失败，0 跳过** | 数学、构建、内链及锚点、脚本语法、发布保护、HTTP 服务、部署内容核验 |
+| Node.js 22.23.3 `npm run build` | **成功** | 六页及 404、三项资源、构建清单、完整单文件预览 |
+| Chromium **153.0.8010.12** 单文件版 | **39 项通过，0 失败** | 三实验、九题、画布噪声、术语、播放暂停、菜单、键盘、非法 hash、存储恢复替身及真实禁用存储 |
+| 同一 Chromium，真实 HTTP 导航 | **33 项通过，0 失败** | 原生 localStorage 跨页与刷新恢复、三个实验、九题、手机导航、存储损坏恢复；六页在 320/360/390/768/1366px 均无整页横向溢出 |
+| 截图人工查看 | **完成** | 桌面首页、手机第三课、第三课公式与滑块实验；中文、MathML、画布清晰，无所检查区域的明显遮挡或裁切 |
+| 发布核验器 HTTP 回归 | **通过** | 正确构建通过；旧提交、404、200 错误页面、JS 错误 MIME 被拒绝 |
+| 正式 GitHub Pages | **未部署** | PR 未合并、deploy 跳过；正式六页仍 404 |
 
-37 项包含两个 HTTP 测试组及其合计 10 个子测试；不是 37 个顶层测试文件。日志保存在交付包 `validation/node22-tests.log`、`validation/node22-build.log`，版本记录为 `validation/node-version.txt`。Node.js 安装包与官方 SHA-256 清单比对通过。
+37 项 Node 测试包含两个 HTTP 测试组及合计 10 个子测试，不是 37 个测试文件。本地 Node.js 22.16.0 此前也通过相同 37 项与构建。网站不需 npm 依赖；CI 使用 Playwright Python 1.63.0 与其 Chromium，仅作为测试工具。
 
-**附件内原 QA 的“29 项 Node / 36 项浏览器通过”属于首版制作记录，不代表本次验证。** 本次未沿用其浏览器通过结论。最新 Chromium 下载也曾返回无效压缩包；备用 Chromium 虽能显示版本，仍不能启动页面。没有把此问题标成网站本身的运行故障，也没有绕过环境访问限制。
+完整浏览器报告与截图位于上述 Actions 运行的 **browser-checks** 工件（保留 7 天）：https://github.com/dreamlong1/diffusion-course/actions/runs/38863766754/artifacts/12030705010 。其中 `browser-report.json` 为 39 项，`browser-http-report.json` 为 33 项；后一份测试没有替换 localStorage。测试全程无捕获到的未处理页面错误或失败资源请求。
+
+此前本地 Chromium 启动失败（SIGTRAP），因此没有沿用附件首版“36 项浏览器通过”的旧结论。本次新结论来自 GitHub Ubuntu runner 的真实运行与下载报告。
 
 ## 修改与数学复核
 
@@ -36,10 +44,9 @@
 
 ## 尚未验证
 
-1. 本次修改后的真实浏览器交互、MathML 渲染、画布、手机/电脑布局、键盘完整流程、九题提交，以及原生 localStorage 跨页面和刷新保存。已补充回归脚本，但当前浏览器启动失败，不能报告通过。
-2. Safari、Firefox、真实 iOS/Android 设备、屏幕阅读器完整审计。
-3. GitHub Actions 是否能够在真实仓库中取得工件、配置的 Pages 发布源是否有效、正式 HTTPS 六页与资源能否访问、HTTPS 本地进度。
-4. 原 PDF 的具体页码及引用对应关系。
+1. 正式 GitHub Pages 部署、HTTPS 六页及该 HTTPS 源上的学习进度。需要完成 Pages 配置和 PR 审核合并后，再看 main 的发布及字节核验结果。
+2. Safari、Firefox、真实 iOS/Android 设备、屏幕阅读器完整审计。手机测试是 Chromium 视口模拟，不是真机。
+3. 原 PDF 的具体页码及引用对应关系；本次没有取得原 PDF。
 
 ## 复现
 

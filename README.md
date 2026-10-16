@@ -2,7 +2,7 @@
 
 第一单元的完整交互式教材：三课、三个实验、九道带解析的题目。正文面向高中知识基础，材料范围与教学补充单独标注。
 
-**维护状态（2026-10-16）：源码基于原始附件修复，并移植到现有仓库的真实 main 提交上。Node.js 22.16.0 的 37 项测试与构建通过；已加入 GitHub Actions 的 Chromium 交互回归。PR、线上测试与部署结果见 [QA.md](QA.md)。** 正式目标地址为 `https://dreamlong1.github.io/diffusion-course/`；提交代码不等于完成部署。
+**维护状态（2026-10-16）：源码基于原始附件修复，并移植到现有仓库的真实 main 提交上。GitHub Actions 的 Node.js 22.23.3：37 项测试通过、构建通过；Chromium 单文件 39 项、真实 HTTP 33 项通过。[PR #1](https://github.com/dreamlong1/diffusion-course/pull/1) 待审核，Pages 尚未部署。证据与边界见 [QA.md](QA.md)。** 正式目标地址为 `https://dreamlong1.github.io/diffusion-course/`；提交代码不等于完成部署。
 
 ## 先看成品，不用安装开发工具
 

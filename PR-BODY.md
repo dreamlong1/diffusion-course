@@ -12,7 +12,9 @@
 
 ## 验证
 
-本地 Node.js 22.16.0：37 项通过、0 失败；构建成功。本机 Chromium 启动受环境限制，交互验收由本 PR 的 Actions 实际运行补齐。尚未声称正式部署成功，最新状态见 QA.md 和本 PR 的 Checks。
+[GitHub Actions 实测通过](https://github.com/dreamlong1/diffusion-course/actions/runs/38863766754)：Node.js 22.23.3 的 37 项测试通过、构建成功；Chromium 153.0.8010.12 单文件版 39 项、真实 HTTP 版 33 项通过，均为 0 失败。六页在 320/360/390/768/1366px 无整页横向溢出，原生 localStorage 跨页及刷新恢复通过。已查看桌面、手机和实验截图，完整报告见 browser-checks 工件与 QA.md。
+
+尚未验证 Safari/Firefox、真实手机、完整屏幕阅读器、原 PDF 页码。正式目标六页当前仍 404；本 PR 的 deploy 按设计跳过，不代表上线。
 
 ## 发布
 
