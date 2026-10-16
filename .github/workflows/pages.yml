@@ -55,6 +55,7 @@ jobs:
             .preview/browser*.json
             .preview/screenshots/
             .preview/server.log
+            .preview/course-preview.html
           include-hidden-files: true
           retention-days: 7
       - name: Upload only built website

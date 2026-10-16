@@ -60,7 +60,7 @@ with sync_playwright() as p:
             for bound in ['min','max']:
                 control.evaluate('(e,b)=>{e.value=e.getAttribute(b);e.dispatchEvent(new Event("input",{bubbles:true}));}',bound)
                 assert 'NaN' not in page.locator('[data-advanced-lab]').inner_text() and 'Infinity' not in page.locator('[data-advanced-lab]').inner_text()
-                assert not page.locator('svg').evaluate('(e)=>/NaN|Infinity/.test(e.outerHTML)')
+                assert not page.locator('[data-advanced-plot]').evaluate('(e)=>/NaN|Infinity/.test(e.outerHTML)')
         page.locator('[data-advanced-reset]').click()
         check(f'lesson {n} controls and plot stay finite at bounds',True)
     routes=['']+[f'lessons/{n}/' for n in range(1,13)]+['glossary/','sources/']
