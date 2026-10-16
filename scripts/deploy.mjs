@@ -98,7 +98,7 @@ async function main(){
  if(result('git',['config','user.name']).status!==0)run('git',['config','--local','user.name',OWNER]);
  if(result('git',['config','user.email']).status!==0)run('git',['config','--local','user.email',`${user.id}+${OWNER}@users.noreply.github.com`]);
  if(!repo){
-  run('gh',['repo','create',REPO,'--public','--description','高中生也能懂的扩散模型：前三课交互教材'],{inherit:true});
+  run('gh',['repo','create',REPO,'--public','--description','高中生也能懂的扩散模型：十二课完整交互入门课程'],{inherit:true});
  }
  if(result('git',['remote','get-url','origin']).status!==0)run('git',['remote','add','origin',REMOTE]);
  const gitAuth=['-c','credential.helper=','-c','credential.helper=!gh auth git-credential'];
@@ -108,7 +108,7 @@ async function main(){
  }
  run('git',['add','--',...files]);
  const staged=run('git',['diff','--cached','--name-only']);
- if(staged)run('git',['commit','-m','Publish diffusion course lessons 1–3 [skip ci]'],{inherit:true});
+ if(staged)run('git',['commit','-m','Publish complete diffusion course [skip ci]'],{inherit:true});
  const sha=run('git',['rev-parse','HEAD']);
  run('git',[...gitAuth,'push','-u','origin','main'],{inherit:true});
  process.env.GITHUB_SHA=sha;
@@ -132,7 +132,7 @@ async function main(){
  const actualBase=new URL(url.endsWith('/')?url:url+'/');
  const expected=JSON.parse(readFileSync(resolve(root,'dist/build-info.json'),'utf8'));
  await verifyPages(actualBase.href,expected);
- console.log(`\n发布成功，且提交版本、六个课程页面及三项资源均已通过 HTTP 字节核验：\n${actualBase.href}\n源仓库：https://github.com/${REPO}\n后续更新可正常提交并推送 main，工作流会自动发布。`);
+ console.log(`\n发布成功，且提交版本、全部课程页面及静态资源均已通过 HTTP 字节核验：\n${actualBase.href}\n源仓库：https://github.com/${REPO}\n后续更新可正常提交并推送 main，工作流会自动发布。`);
 }
 main().catch(error=>{
  console.error('\n发布未完成：'+error.message);

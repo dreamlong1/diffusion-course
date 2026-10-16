@@ -1,37 +1,31 @@
 # 高中生也能懂的扩散模型
 
-第一单元的完整交互式教材：三课、三个实验、九道带解析的题目。正文面向高中知识基础，材料范围与教学补充单独标注。
+从高中数学出发的完整入门路线：**12 课、12 个交互实验、36 道带解析练习、24 个术语**。保留原有三课与静态站架构，补齐训练、采样、Score、Flow Matching、Flow Maps、Diffusion Policy 和综合实践。
 
-**维护状态（2026-10-16）：源码基于原始附件修复，并移植到现有仓库的真实 main 提交上。GitHub Actions 的 Node.js 22.23.3：37 项测试通过、构建通过；Chromium 单文件 39 项、真实 HTTP 33 项通过。[PR #1](https://github.com/dreamlong1/diffusion-course/pull/1) 待审核，Pages 尚未部署。证据与边界见 [QA.md](QA.md)。** 正式目标地址为 `https://dreamlong1.github.io/diffusion-course/`；提交代码不等于完成部署。
+网站：https://dreamlong1.github.io/diffusion-course/ 。本轮开始时正式站已上线 1.0.1 三课版；2.0.0 完整课程通过独立分支 `feat/complete-course` 和 PR 审核后发布。测试、PR 与实际线上版本以 [QA.md](QA.md) 为准，不能把提交成功当成部署成功。
 
-## 先看成品，不用安装开发工具
+## 学习路线
 
-打开交付包中的 `预览.html`（或单独提供的 `diffusion-course-preview.html`），即可使用全部课程、实验、题目与术语搜索。它是完整的单文件版，没有外部字体、脚本或图片依赖。浏览器禁止本地存储时会显示提示，交互仍可使用。
+| 单元 | 课程 | 动手实验 |
+|---|---|---|
+| 核心直觉 | 1 扩散模型是什么 | 数字与图像加噪 |
+| | 2 AI 怎样学会去噪 | 预测噪声与平方损失 |
+| | 3 为什么要一步步去噪 | 余弦调度与时间 |
+| 从数据到生成 | 4 随机噪声也有规律吗 | 高斯样本直方图 |
+| | 5 模型究竟怎样学会预测 | 单参数梯度训练 |
+| | 6 把一轮去噪算清楚 | DDPM 反向均值与方差 |
+| | 7 怎样让生成结果听懂要求 | 条件与无条件预测组合 |
+| 生成方法与应用 | 8 Score：哪边更像数据 | 高斯 Score 方向 |
+| | 9 Flow Matching：学习怎样移动 | 配对路径与速度损失 |
+| | 10 能不能更少几步 | Euler 近似与已知 Flow Map |
+| | 11 Diffusion Policy：生成一串动作 | 计划六步、执行一部分 |
+| | 12 综合实践 | 噪声误差与重建误差对照 |
 
-`dist/index.html` 是多页面网站的入口。各页采用相对链接，并显式指向 `index.html`；发布到项目路径后仍能正确引用样式与脚本。GitHub Pages 正式部署应使用构建出的 `dist/` 内容。
+每课含目标、正文、可手算例子、实验任务、三道题与解析、总结、来源。进阶推导可折叠，不要求先懂微积分或编程。“完整”指完整入门路线，不是大模型训练或真实机器人部署训练营。第五课确实更新一个线性参数；其他实验的模型边界逐项标注，不冒充训练好的神经网络。详细依据见 [CONTENT-NOTES.md](CONTENT-NOTES.md)。
 
-## 发布到 GitHub
+## 本地运行
 
-**推荐先审核 PR：** 使用 `fix/course-final-qa` 分支与 PR，操作见 [DEPLOY.md](DEPLOY.md)。下面的 `npm run deploy` 是直接发布 main 的备选方式，不会自动创建 PR，不适用于等待审核的分支。
-
-本机准备 Node.js 22 或更高版本、Git、GitHub CLI。解压后在本项目目录打开终端：
-
-```sh
-gh auth login --hostname github.com --git-protocol https --web --scopes workflow
-npm run deploy
-```
-
-在浏览器中登录 **dreamlong1**。脚本会先检查账号、仓库及本地测试，列出将公开的源文件，再要求输入 `PUBLISH` 确认。**不要把密码、访问令牌或设备登录码发到聊天中。** GitHub CLI 的登录在你的电脑与 GitHub 之间进行。
-
-更多说明、失败恢复与纯网页上传方式见 [DEPLOY.md](DEPLOY.md)。查看计划而不进行 GitHub 读写：
-
-```sh
-npm run deploy:plan
-```
-
-## 本地维护
-
-没有 npm 依赖，不需要 `npm install`：
+Node.js 22，无 npm 依赖，无需 `npm install`：
 
 ```sh
 npm test
@@ -39,34 +33,22 @@ npm run build
 npm start
 ```
 
-预览地址是 `http://127.0.0.1:4321/diffusion-course/`。服务器只监听本机。停止服务器使用 Ctrl+C。`npm run build` 会重建 `dist/`，同时生成 `.preview/course-preview.html`。
+打开 http://127.0.0.1:4321/diffusion-course/ 。构建生成 `dist/`（15 页、404、4 项资源、构建清单）和 `.preview/course-preview.html`（完整离线单文件）。正式站有独立课程 URL；单文件用 hash 切换全部 15 个视图。
 
-## 目录
+学习记录只保存在当前浏览器，原三课的记录自动保留；不会上传答案。换设备不自动同步。浏览器禁止存储时仍可操作实验。移动端目录可滚动，所有实验支持键盘，公式使用原生 MathML，不加载外部字体。
 
-```text
-content/lessons/01.mjs       第一课正文、目标、题目
-content/lessons/02.mjs       第二课正文、目标、题目
-content/lessons/03.mjs       第三课正文、目标、题目
-content/glossary.mjs         术语定义与材料说明
-src/templates.mjs           页面布局、首页、资料页
-src/experiments.mjs         三个交互实验的界面
-src/math.mjs                原生 MathML 公式
-src/core.js                 可单元测试的数学函数
-src/app.js                  浏览器交互与本地进度
-src/styles.css              桌面、手机、键盘与打印样式
-scripts/build.mjs           无网络、零依赖构建
-scripts/serve.mjs           本机静态预览服务器
-scripts/verify-pages.mjs    线上版本、六个页面和三项资源的字节核验
-scripts/deploy.mjs          账号核对、创建、推送与发布
-.github/workflows/pages.yml 主分支自动发布，PR 只检查
-```
+## 源码结构
 
-修改课程后运行测试和构建，再通过 PR 合并到 `main`。只有 `dist/` 被作为 Pages 工件发布，原 PDF 和源文件不会进入网站工件；源代码仓库本身则是公开的。
+- `content/course.mjs`：课程、单元、路径和题目数量的统一入口。
+- `content/lessons/01.mjs` 至 `12.mjs`：正文与题目；`content/glossary.mjs`：术语。
+- `src/templates.mjs`、`styles.css`：网站布局；`math.mjs`、`lesson-kit.mjs`：教学标记。
+- `src/core.js`：可测试的数值函数；`app.js`：原实验与共享进度；`advanced-app.js`：新实验。
+- `src/experiments.mjs`、`advanced-experiments.mjs`：实验界面。
+- `scripts/build.mjs`、`serve.mjs`、`verify-pages.mjs`：构建、预览和线上字节核验。
+- `tests/`：数学、静态页面、HTTP、发布核验与 Chromium 浏览器回归。
 
-## 首版的实现调整
+## 发布与测试
 
-原方案推荐 Astro / MDX 和 KaTeX。制作环境无法下载依赖，首版改用零依赖的 Node.js 静态生成、原生 JavaScript 和 MathML；**没有声称已构建或测试 Astro 项目**。课程逐课拆分、自动发布、移动布局和所有计划的首版实验仍然保留。后续迁移到框架时可以复用正文、题库、数学核心与交互逻辑。
+优先分支和 PR。GitHub Actions 在 Node.js 22 测试构建，再运行 Python Playwright/Chromium 回归；测试工具不进入网站。PR 只检查，main 合并后发布 Pages，并核对提交版本、全部 15 页和 4 项资源。操作见 [DEPLOY.md](DEPLOY.md)。
 
-## 测试与边界
-
-完整记录见 [QA.md](QA.md)。该站不包含真实 DDPM 推理或浏览器神经网络训练。数值实验是公式演示，去噪播放器是流程示意。课程引用来源、简化方式和后续章节范围见 [CONTENT-NOTES.md](CONTENT-NOTES.md)；素材范围见 [RIGHTS.md](RIGHTS.md)。
+本地浏览器复现与尚未验证的环境见 [QA.md](QA.md)。不上传原 PDF，不提供账号系统或付费服务，不为原材料擅自授予开放许可，见 [RIGHTS.md](RIGHTS.md)。

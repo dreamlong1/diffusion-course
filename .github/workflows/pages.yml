@@ -45,6 +45,7 @@ jobs:
             sleep 1
           done
           .browser-env/bin/python tests/browser_http.py --chromium "$CHROMIUM_PATH"
+          .browser-env/bin/python tests/browser_full.py --chromium "$CHROMIUM_PATH"
       - name: Upload browser reports and screenshots
         if: always()
         uses: actions/upload-artifact@v5
@@ -91,7 +92,7 @@ jobs:
       - name: Deploy website
         id: deployment
         uses: actions/deploy-pages@v4
-      - name: Verify published revision, six pages and three assets
+      - name: Verify published revision, all pages and assets
         env:
           PAGE_URL: ${{ steps.deployment.outputs.page_url }}
         run: npm run verify:pages -- "$PAGE_URL"

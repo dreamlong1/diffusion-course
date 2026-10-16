@@ -1,9 +1,9 @@
 {
   "name": "diffusion-course",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "高中生也能懂的扩散模型：前三课交互教材",
+  "description": "高中生也能懂的扩散模型：十二课完整交互入门课程",
   "engines": {
     "node": ">=22"
   },

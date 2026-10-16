@@ -2,14 +2,14 @@
 
 ## 当前状态
 
-仓库已创建并可访问。本次修复基于真实 main 初始提交 `23cd78db64326d94aba9ab212a7d8d846b468399`，在 `fix/course-final-qa` 分支提交，通过 PR 审核；没有覆盖或强推 main。测试与部署的最新证据见 [QA.md](QA.md)。
+PR #1 已由维护者合并，三课版 main `acfd6b7dc2d95955f67cc4891dfb6a9ddf63a279` 的 Pages 工作流成功。正式站构建清单已匹配该提交。本轮 2.0.0 完整课程在 `feat/complete-course` 独立分支开发，仍经 PR 审核合并；不能用旧版已上线代替新版验收。最新证据见 [QA.md](QA.md)。
 
 ## PR 审核和首次 Pages 配置
 
 1. 打开 https://github.com/dreamlong1/diffusion-course/pulls ，审核修复 PR 的 **Files changed** 与 **Checks**。构建门槛包括 Node.js 22 的 `npm test`、`npm run build`、Chromium 单文件与真实 HTTP 回归。`browser-checks` 工件包含报告和截图。
 2. 仓库 **Settings → Pages → Build and deployment → Source → GitHub Actions**。已有 `pages.yml`，无需另建模板。GitHub 连接支持源代码操作不代表支持 Pages 管理；若连接无法配置，需要管理员在这里完成一次设置。
 3. 审核通过后点击 **Merge pull request → Confirm merge**。不要把旧交付 bundle 的本地历史推送到已有 main，也不要使用 force。
-4. 打开 **Actions → Build and publish diffusion course**，查看 main 提交。`deploy` 中的 **Verify published revision, six pages and three assets** 也必须成功，才算这份提交已发布并核验。需要重试时，在 main 选择 **Run workflow**。
+4. 打开 **Actions → Build and publish diffusion course**，查看 main 提交。`deploy` 中的 **Verify published revision, all pages and assets** 也必须成功，才算这份提交已发布并核验。需要重试时，在 main 选择 **Run workflow**。
 5. 从 **Settings → Pages → Visit site** 获取实际地址。默认目标为 https://dreamlong1.github.io/diffusion-course/ 。还应在正式站点复查实验、题目与刷新后的学习进度；字节核验不能替代浏览器测试。
 
 PR 仅检查，不部署。main push 或手动触发会在全部测试通过后部署。网站没有运行时第三方依赖；CI 的 Python Playwright 和 Chromium 仅用于测试。
@@ -35,7 +35,7 @@ npm run deploy
 
 登录账号必须为 `dreamlong1`。`workflow` 权限用于推送工作流文件；不要在聊天中提供任何密码、令牌或设备登录码。若曾用其他账号登录，可先在本机使用 `gh auth switch --hostname github.com --user dreamlong1`，并运行 `gh auth status` 核对。
 
-脚本会列出即将公开的源文件，要求输入 `PUBLISH`。随后会检查或创建公开仓库、推送 main、把 Pages 构建类型设为 workflow、触发 `pages.yml`，等待工作流结果，并读取实际站点地址，核对提交版本、六个页面与三项资源的 SHA-256 和 MIME 类型。第一次推送使用 `[skip ci]`，先完成 Pages 配置，再显式触发工作流，避免初始化竞态。
+脚本会列出即将公开的源文件，要求输入 `PUBLISH`。随后会检查或创建公开仓库、推送 main、把 Pages 构建类型设为 workflow、触发 `pages.yml`，等待工作流结果，并读取实际站点地址，核对提交版本、15 个页面与 4 项资源的 SHA-256 和 MIME 类型。第一次推送使用 `[skip ci]`，先完成 Pages 配置，再显式触发工作流，避免初始化竞态。
 
 脚本仅在本仓库按需设置提交身份；Git 身份不存在时使用 GitHub 的 noreply 形式邮箱。GitHub CLI 为本次推送提供凭据，不把令牌写入源文件，不改全局 Git 配置。
 
@@ -65,13 +65,13 @@ npm run deploy:plan
 2. 把交付包 `dist/` 里面的文件和目录上传到仓库根目录，而不是上传外层 `dist` 文件夹。根目录应能看到 `index.html`、`assets/`、`lessons/`、`glossary/` 和 `sources/`。
 3. 保留根目录的空文件 `.nojekyll`。若网页上传忽略了它，用 GitHub 的新建文件功能添加该名称。
 4. 在 **Settings → Pages** 选择 **Deploy from a branch**，分支 `main`，目录 `/(root)`，保存。
-5. 查看 GitHub 显示的实际发布网址，打开首页、三课、术语页和资料页，拖动实验，检查是否有缺失资源。
+5. 查看 GitHub 显示的实际发布网址，打开首页、十二课、术语页和资料页，拖动实验，检查是否有缺失资源。
 
 该备选方式以后需要重新上传构建成品才能更新；不能把“上传完成”直接等同于“部署完成”。
 
 ## 后续正常更新
 
-优先通过分支与 PR 更新 main。工作流只在 main 的 push 或手动触发时部署，PR 仅测试、浏览器回归和构建；部署工作使用 `pages: write`、`id-token: write`，源码只读。构建清单包含提交 SHA 与九项文件摘要；部署后逐项核验内容，可发现旧页面、缺失资源和返回 HTTP 200 的错误页。这个核验流程已用本地 HTTP 测试覆盖，实际 Actions 运行结果以 QA.md 链接为准。
+优先通过分支与 PR 更新 main。工作流只在 main 的 push 或手动触发时部署，PR 仅测试、浏览器回归和构建；部署工作使用 `pages: write`、`id-token: write`，源码只读。构建清单包含提交 SHA 与19 项文件摘要；部署后逐项核验内容，可发现旧页面、缺失资源和返回 HTTP 200 的错误页。这个核验流程已用本地 HTTP 测试覆盖，实际 Actions 运行结果以 QA.md 链接为准。
 
 首次通过脚本发布后，在项目目录修改正文或交互，运行测试，再用普通 git 流程提交与推送 main。自动工作流会构建，PR 只执行检查，main 合并或推送才部署。网站工件保留期设为一天，避免无谓保留大量构建包。
 

@@ -7,9 +7,20 @@ export default [
  {key:'time',symbol:'t',name:'扩散时间',english:'Diffusion time',definition:'噪声过程中的阶段标签，可以是离散步数，也可以是连续参数。本课约定 0 是干净端，较大的 t 通常对应更强噪声；它不是现实秒数。',source:'PDF 第 3–4、6 页；“不是秒数”为教学说明'},
  {key:'schedule',symbol:'αₜ, σₜ',name:'噪声调度',english:'Noise schedule',definition:'为不同的 t 规定信号与噪声系数的规则。本课实验采用无偏移的连续余弦混合；真实 Improved DDPM 还涉及偏移、归一化和离散化，不能直接照搬实验端点。',source:'PDF 第 4–5 页'},
  {key:'prediction',symbol:'ε̂',name:'预测噪声',english:'Predicted noise',definition:'模型对噪声的估计。帽子表示“估计”，不代表它一定与真实噪声相等。PDF 主要用 εθ(xₜ,t) 表示网络的噪声输出。',source:'PDF 第 7–8 页；帽子为课程简记'},
- {key:'network',symbol:'εθ',name:'神经网络',english:'Neural network',definition:'本课把它看成一个有许多可调参数的数学函数。噪声预测网络接收 xₜ、t，输出噪声估计。参数如何调整，暂不展开。',source:'PDF 第 7–8 页；函数比喻为教学补充'},
+ {key:'network',symbol:'εθ',name:'神经网络',english:'Neural network',definition:'本课把它看成一个有许多可调参数的数学函数。噪声预测网络接收 xₜ、t，输出噪声估计。第五课用一个参数的线性预测器说明损失与参数更新。',source:'PDF 第 7–8 页；函数比喻为教学补充'},
  {key:'theta',symbol:'θ',name:'模型参数',english:'Model parameters',definition:'用来表示网络内部可学习参数的记号。训练会调整参数，生成时则使用训练好的模型进行预测。',source:'PDF 第 6–8 页的参数记号；解释为教学展开'},
  {key:'loss',symbol:'L',name:'损失',english:'Loss',definition:'评价预测与目标差距的量。本课使用单数字平方误差；原文的目标还包含向量平方范数、对训练样本的平均以及时间权重。',source:'PDF 第 8 页'},
  {key:'ddpm',symbol:'DDPM',name:'去噪扩散概率模型',english:'Denoising Diffusion Probabilistic Models',definition:'本课学习的经典扩散模型方法：先构造前向加噪，再学习和使用逐步的反向生成过程。',source:'PDF 第 6–8 页'},
- {key:'policy',symbol:'Policy',name:'扩散策略（预告）',english:'Diffusion Policy',definition:'本课程后续拟讨论的机器人应用方向。首版仅提醒区分动作时间与扩散时间，没有讲解该方法的完整算法或代码。',source:'教学扩展预告，不作为本 PDF 已覆盖的主题'}
+ {key:'policy',symbol:'Policy',name:'扩散策略',english:'Diffusion Policy',definition:'根据观察条件生成一段动作序列的策略方法。第十一课解释动作时间、扩散时间与滚动执行；实验是手写数轴规划器，不是真实策略网络。',source:'第十一课教学扩展；Diffusion Policy 作者论文与项目'},
+ {"key": "mean", "symbol": "μ", "name": "均值", "english": "Mean", "definition": "描述分布中心或一组样本平均值的量；有限样本均值不必精确等于理论均值。", "source": "新增教学词条；见相关课程与来源说明"},
+ {"key": "std", "symbol": "s", "name": "标准差", "english": "Standard deviation", "definition": "衡量离中心的典型尺度，是方差的平方根。本课用 s 与加噪系数 σₜ 区分。", "source": "新增教学词条；见相关课程与来源说明"},
+ {"key": "gradient", "symbol": "∇", "name": "梯度", "english": "Gradient", "definition": "局部函数上升最快的方向；参数训练通常沿损失梯度的相反方向走小步。", "source": "新增教学词条；见相关课程与来源说明"},
+ {"key": "overfit", "symbol": "过拟合", "name": "过拟合", "english": "Overfitting", "definition": "在训练样本上表现很好，但对没见过的数据表现不佳；需分开训练与验证、测试数据。", "source": "新增教学词条；见相关课程与来源说明"},
+ {"key": "cfg", "symbol": "CFG", "name": "无分类器引导", "english": "Classifier-free guidance", "definition": "组合有条件和无条件预测。课程使用 ε无 + g(ε有−ε无)，g = 1 表示有条件预测。", "source": "新增教学词条；见相关课程与来源说明"},
+ {"key": "score", "symbol": "∇ log p", "name": "Score", "english": "Score function", "definition": "对数概率密度对位置的梯度，不是图片质量分数或概率本身。", "source": "新增教学词条；见相关课程与来源说明"},
+ {"key": "flow-matching", "symbol": "vθ", "name": "流匹配", "english": "Flow Matching", "definition": "通过已知路径上的速度目标训练速度场；生成时从噪声出发，用模型预测速度并求解运动。", "source": "新增教学词条；见相关课程与来源说明"},
+ {"key": "flow-map", "symbol": "Φₛ,ₜ", "name": "流映射", "english": "Flow Map", "definition": "描述从阶段 s 的位置到阶段 t 的位置的整段运动；区别于单个阶段的瞬时速度。", "source": "新增教学词条；见相关课程与来源说明"},
+ {"key": "receding-horizon", "symbol": "滚动时域", "name": "滚动时域", "english": "Receding horizon", "definition": "计划一段未来动作，只执行前一部分，再获取新观察并重规划。", "source": "新增教学词条；见相关课程与来源说明"},
+ {"key": "sampler", "symbol": "采样器", "name": "采样器", "english": "Sampler", "definition": "根据模型输出、阶段与调度更新样本的算法；需要与模型的输出参数化匹配。", "source": "新增教学词条；见相关课程与来源说明"},
+ {"key": "learning-rate", "symbol": "η", "name": "学习率", "english": "Learning rate", "definition": "参数更新的步长系数；太大可能越过最优点甚至发散，太小则更新缓慢。", "source": "新增教学词条；见相关课程与来源说明"}
 ];

@@ -18,7 +18,7 @@ export async function verifyPages(base, expected, {attempts=12, delay=5000}={}) 
    const manifest=await (await get('build-info.json')).json();
    if(manifest.name!=='diffusion-course'||manifest.revision!==expected.revision)throw new Error('Deployed revision differs from expected build');
    const files=Object.entries(expected.hashes||{});
-   if(files.length!==9)throw new Error('Expected six pages and three assets in build manifest');
+   if(!Array.isArray(expected.pages)||expected.pages.length<4||files.length!==expected.pages.length+4||expected.pages.some(path=>!expected.hashes[path]))throw new Error('Expected all course pages and four assets in build manifest');
    for(const [path,hash] of files){
     if(manifest.hashes?.[path]!==hash)throw new Error(`Stale manifest: ${path}`);
     const r=await get(path),type=r.headers.get('content-type')||'';
