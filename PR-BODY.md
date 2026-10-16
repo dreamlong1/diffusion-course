@@ -12,6 +12,10 @@
 
 ## 验证与发布
 
-本地 Node.js 22.16.0 的 47 项测试和构建通过。Actions 使用 Node.js 22，并运行原浏览器回归与新完整课程套件；最终结果见 Checks 和 QA.md。新增套件覆盖全 36 题、12 实验、旧进度迁移、两位课号、刷新跨页、多屏宽、单文件与长目录。
+[GitHub Actions 实测通过](https://github.com/dreamlong1/diffusion-course/actions/runs/38870376348)：Node.js 22.23.3 的 **47 项测试通过，构建成功**；Chromium 153.0.8010.12 的 **39 + 33 + 98 = 170 项检查通过，0 失败**。本地 Node 22.16.0 也通过 47 项与构建。
+
+全部 36 题、12 实验、旧 v1 进度、两位课号续学、跨页与刷新、控件端点、15 页 320/390/768/1366px 视口检查通过。已人工查看桌面首页、第十课积分实验和第十一课手机整页。
+
+[下载审核工件](https://github.com/dreamlong1/diffusion-course/actions/runs/38870376348/artifacts/12033196397) 中的 `course-preview.html` 可离线打开全课程，另含 JSON 报告和截图（保留 7 天）。更长期可从源码 `npm run build` 重建。首次完整浏览器运行的选择器歧义已修复并重测通过，没有跳过检查。
 
 当前正式站仍是 main 的三课版，完整课程须审核本 PR 并合并后发布。未上传原 PDF、令牌或浏览器，未加入付费服务。Safari/Firefox、真机与完整屏幕阅读器测试未覆盖。
