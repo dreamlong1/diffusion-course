@@ -1,0 +1,17 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import '../src/core.js';
+const D=globalThis.DiffusionMath;
+const near=(a,b,t=1e-10)=>assert.ok(Math.abs(a-b)<=t,`${a} != ${b}`);
+test('lesson 1: 0.8×10 + 0.6×2 = 9.2',()=>near(D.mix(10,.8,.6,2),9.2));
+test('lesson 2: correct loss and reconstruction',()=>{near(D.loss(1.5,2),.25);near(D.loss(1.9,2),.01);near(D.estimate(9.2,.8,.6,1.5),10.375);near(D.estimate(9.2,.8,.6,2),10);});
+test('exact cosine endpoints, no floating residual at t=1',()=>{assert.deepEqual(D.cosine(0),{alpha:1,sigma:0});assert.deepEqual(D.cosine(1),{alpha:0,sigma:1});});
+test('lesson 3 endpoints yield 10 and -2',()=>{for(const[t,x]of[[0,10],[1,-2]]){const{alpha,sigma}=D.cosine(t);near(D.mix(10,alpha,sigma,-2),x);}});
+test('cosine schedule preserves alpha²+sigma² and is monotonic',()=>{let lastA=1,lastS=0;for(let i=0;i<=100;i++){const{alpha:a,sigma:s}=D.cosine(i/100);near(a*a+s*s,1);assert.ok(a<=lastA+1e-12);assert.ok(s>=lastS-1e-12);lastA=a;lastS=s;}});
+test('alpha=0 cannot reconstruct; near-zero is guarded',()=>{assert.equal(D.estimate(-2,0,1,-2),null);assert.equal(D.estimate(1,1e-12,.5,2),null);});
+test('small alpha amplifies an error in predicted noise',()=>{const x=D.mix(10,.01,1,2);near(D.estimate(x,.01,1,2.001),9.9,1e-8);});
+test('known noise reconstructs consistently away from singular endpoint',()=>{for(let i=0;i<100;i++){const{alpha,sigma}=D.cosine(i/100);near(D.estimate(D.mix(10,alpha,sigma,-2),alpha,sigma,-2),10,1e-9);}});
+test('invalid numeric input is rejected',()=>{assert.throws(()=>D.cosine(-.1),RangeError);assert.throws(()=>D.cosine(1.1),RangeError);assert.throws(()=>D.mix(10,NaN,1,2),TypeError);assert.throws(()=>D.loss(Infinity,1),TypeError);});
+test('format avoids NaN, Infinity, negative zero',()=>{assert.equal(D.format(null),'不可反算');assert.equal(D.format(-.00001),'0');assert.equal(D.format(10.375),'10.375');assert.equal(D.format(Infinity),'不可反算');});
+test('noise is deterministic for one seed, different after reseeding',()=>{assert.deepEqual(D.gaussianArray(200,731),D.gaussianArray(200,731));assert.notDeepEqual(D.gaussianArray(200,731),D.gaussianArray(200,762));});
+test('noise sample has approximately zero mean and unit variance',()=>{const noise=D.gaussianArray(65536,731);const mean=noise.reduce((a,b)=>a+b,0)/noise.length;const variance=noise.reduce((a,b)=>a+(b-mean)**2,0)/noise.length;assert.ok(Math.abs(mean)<.025);assert.ok(Math.abs(variance-1)<.04);});

@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {spawnSync} from 'node:child_process';
+import {readFileSync} from 'node:fs';
+import {fileURLToPath} from 'node:url';
+const file=fileURLToPath(new URL('../scripts/deploy.mjs',import.meta.url));
+test('dry-run succeeds without calling GitHub or requiring CLI',()=>{const r=spawnSync(process.execPath,[file,'--dry-run'],{encoding:'utf8'});assert.equal(r.status,0);assert.match(r.stdout,/未创建仓库/);assert.match(r.stdout,/dreamlong1\/diffusion-course/);});
+test('unknown deployment flags fail safely',()=>{const r=spawnSync(process.execPath,[file,'--force'],{encoding:'utf8'});assert.equal(r.status,2);assert.match(r.stderr,/未知参数/);});
+test('deployment script has no forced push or global Git config',()=>{const script=readFileSync(file,'utf8');assert.ok(!script.includes("'--force'"));assert.ok(!script.includes("'--global'"));assert.ok(script.includes("user.login!==OWNER"));assert.ok(script.includes('remoteHeadExists&&!hasGit'));});
+test('workflow only deploys main, not pull requests, and uses dist artifact',()=>{const text=readFileSync(new URL('../.github/workflows/pages.yml',import.meta.url),'utf8');assert.match(text,/github\.event_name != 'pull_request'/);assert.match(text,/refs\/heads\/main/);assert.match(text,/path: dist/);assert.match(text,/needs: build/);assert.match(text,/pages: write/);assert.match(text,/id-token: write/);});

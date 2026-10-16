@@ -1,0 +1,97 @@
+name: Build and publish diffusion course
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: diffusion-course-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Use Node.js 22
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - name: Run deterministic tests
+        run: npm test
+      - name: Build static site (no package downloads)
+        run: npm run build
+      - name: Install browser test tools
+        run: |
+          python3 -m venv .browser-env
+          .browser-env/bin/pip install playwright==1.63.0
+          .browser-env/bin/python -m playwright install --with-deps chromium
+      - name: Test standalone and HTTP editions in Chromium
+        run: |
+          CHROMIUM_PATH="$(.browser-env/bin/python -c 'from playwright.sync_api import sync_playwright; p=sync_playwright().start(); print(p.chromium.executable_path); p.stop()')"
+          .browser-env/bin/python tests/browser_checks.py --chromium "$CHROMIUM_PATH"
+          node scripts/serve.mjs > .preview/server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:4321/diffusion-course/ > /dev/null; then break; fi
+            sleep 1
+          done
+          .browser-env/bin/python tests/browser_http.py --chromium "$CHROMIUM_PATH"
+      - name: Upload browser reports and screenshots
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: browser-checks
+          path: |
+            .preview/browser*.json
+            .preview/screenshots/
+            .preview/server.log
+          include-hidden-files: true
+          retention-days: 7
+      - name: Upload only built website
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+          retention-days: 1
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout source for verification
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Use Node.js 22
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - name: Rebuild deterministic manifest for verification
+        run: npm run build
+      - name: Check Pages configuration
+        uses: actions/configure-pages@v5
+      - name: Deploy website
+        id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Verify published revision, six pages and three assets
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: npm run verify:pages -- "$PAGE_URL"
