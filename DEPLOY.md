@@ -2,7 +2,7 @@
 
 ## 当前状态
 
-PR #1 已由维护者合并，三课版 main `acfd6b7dc2d95955f67cc4891dfb6a9ddf63a279` 的 Pages 工作流成功。正式站构建清单已匹配该提交。本轮 2.0.0 完整课程在 `feat/complete-course` 独立分支开发，仍经 PR 审核合并；不能用旧版已上线代替新版验收。最新证据见 [QA.md](QA.md)。
+2.0.0 十二课完整版已于 2026-10-16 正式上线：https://dreamlong1.github.io/diffusion-course/ 。PR #2 按维护者直接发布授权合并，发布提交 `190cce355b3483acdaee7cda7b89c1c77f76649a`。工作流 https://github.com/dreamlong1/diffusion-course/actions/runs/38875290758 的 build、deploy 和线上 19 项文件核验均成功；正式站浏览器交互已复查。Pages 已配置为 GitHub Actions，无需重新配置。后续 main 更新继续自动测试、部署与核验，最新运行以 Actions 为准，详细证据见 [QA.md](QA.md)。
 
 ## PR 审核和首次 Pages 配置
 

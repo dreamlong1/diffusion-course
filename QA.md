@@ -4,11 +4,13 @@
 
 版本 2.0.0：12 课、12 实验、36 题、24 术语；15 个页面和 4 项资源。分支 `feat/complete-course` 基于已合并的真实 main `acfd6b7dc2d95955f67cc4891dfb6a9ddf63a279`。原三课记录沿用 localStorage v1，修复两位课号、锚点与 12 课进度分母。
 
-本轮开始时三课版 1.0.1 已正式上线：https://dreamlong1.github.io/diffusion-course/ 。运行 https://github.com/dreamlong1/diffusion-course/actions/runs/38866262562 成功，正式 build-info.json 的 revision 匹配上述 main。**新 12 课版待 PR 审核及发布，不把旧站成功视为新版成功。**
+2.0.0 十二课完整版已正式上线：https://dreamlong1.github.io/diffusion-course/ 。维护者明确授权直接上线，PR #2 已合并。发布提交 `190cce355b3483acdaee7cda7b89c1c77f76649a`，成功工作流 https://github.com/dreamlong1/diffusion-course/actions/runs/38875290758 。部署步骤与随后线上核验均成功，正式 build-info.json 的 revision 匹配该提交；15 页与 4 项资源的 HTTP、SHA-256 和 MIME 全部匹配。本地独立运行 verify:pages 得到相同结果。此处记录完整课程首次发布证据；后续文档更新会产生新的提交和部署，最新 revision 以正式 build-info.json 及对应 Actions 结果为准。
 
 ## 当前测试
 
-- PR：https://github.com/dreamlong1/diffusion-course/pull/2 ，保留待审核。
+正式发布工作流 38875290758 再次通过下列全部 47 项 Node 测试和 170 项浏览器检查；以下 PR 工件是保留的开发验收报告。
+
+- PR：https://github.com/dreamlong1/diffusion-course/pull/2 ，已按维护者授权合并。
 - 成功运行：https://github.com/dreamlong1/diffusion-course/actions/runs/38870376348 ，测试源提交 `e4a41d55f53fa8fb7d71839bc1c158b43036a9e6`，PR 检出合并预览提交。
 - 工件：https://github.com/dreamlong1/diffusion-course/actions/runs/38870376348/artifacts/12033196397 ，包含完整 `course-preview.html`、三份 JSON 报告与截图，保留 7 天。下载 HTML 即可离线审核全部课程。
 
@@ -51,9 +53,12 @@ python tests/browser_full.py --chromium /实际路径/chrome
 
 报告为 `.preview/browser*-report.json`，截图为 `.preview/screenshots/`。Actions 的 browser-checks 工件保留 7 天；网站运行和构建不需要 Playwright。部署后以同一 GITHUB_SHA 构建，再运行 `npm run verify:pages -- https://dreamlong1.github.io/diffusion-course/`，核对 19 个文件而非只看 HTTP 200。
 
-## 尚未验证和范围限制
+## 正式站复查与范围限制
 
-- 十二课版正式 HTTPS 部署，待 PR 合并后核验。本轮通过的是 GitHub runner 中的真实 HTTP 浏览器检查，不能据此声称新十二课已在正式域名上线。
+- 正式 HTTPS 已通过全部 19 项文件核验，并用云端 Chrome 实测：首页十二课导航；第五课训练一步（w 从 0 到 0.25、损失从 0.625 到 0.15625）；第十二课 t = 1 显示不可反算；数值题 −0.15 正确判分；标记阅读后刷新，保留 1/12 进度及上次正确答案。这是部署后的抽查，全部实验与题目的完整回归在 Actions Chromium 中执行。
+- 正式站抽查过程中，辅助工具首次按 checkbox 查找阅读控件未匹配；按 DOM 实际 button 角色操作成功。捕获到的浏览器扩展元数据错误来自 chrome-extension，不属于网站脚本。
 - Safari/Firefox、真实 iOS/Android 设备、屏幕阅读器完整审计。
 - 原 PDF 页码映射：未取得原 PDF，不声称逐页核对。
 - 网站不包含训练好的图像或机器人模型，不做真实模型质量/任务成功率评估。第五课只训练一个线性参数，其他实验边界见 CONTENT-NOTES.md。
+
+Actions 的 configure-pages@v5 和 deploy-pages@v4 有 Node.js 20 目标弃用提示，当前 runner 已用 Node.js 24 执行并部署成功；项目测试和构建仍明确使用 Node.js 22。此提示未阻止发布，后续可随官方 action 版本更新维护。

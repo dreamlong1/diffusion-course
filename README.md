@@ -2,7 +2,7 @@
 
 从高中数学出发的完整入门路线：**12 课、12 个交互实验、36 道带解析练习、24 个术语**。保留原有三课与静态站架构，补齐训练、采样、Score、Flow Matching、Flow Maps、Diffusion Policy 和综合实践。
 
-网站：https://dreamlong1.github.io/diffusion-course/ 。本轮开始时正式站已上线 1.0.1 三课版；2.0.0 完整课程通过独立分支 `feat/complete-course` 和 PR 审核后发布。测试、PR 与实际线上版本以 [QA.md](QA.md) 为准，不能把提交成功当成部署成功。
+正式网站：https://dreamlong1.github.io/diffusion-course/ 。2.0.0 完整课程已于 2026-10-16 发布。独立分支 `feat/complete-course` 的 PR #2 已按维护者直接上线授权合并；GitHub Actions 已完成部署及全部页面与资源的内容核验，正式 HTTPS 交互也已复查。发布证据与测试限制见 [QA.md](QA.md)。
 
 ## 学习路线
 
