@@ -1,0 +1,16 @@
+import a from './lessons/01.mjs';
+import b from './lessons/02.mjs';
+import c from './lessons/03.mjs';
+import d from './lessons/04.mjs';
+import e from './lessons/05.mjs';
+import f from './lessons/06.mjs';
+import g from './lessons/07.mjs';
+import h from './lessons/08.mjs';
+import i from './lessons/09.mjs';
+import j from './lessons/10.mjs';
+import k from './lessons/11.mjs';
+import l from './lessons/12.mjs';
+export const units = ['核心直觉', '从数据到生成', '生成方法与应用'];
+export const lessons = [a,b,c,d,e,f,g,h,i,j,k,l].map((lesson,index)=>({...lesson,unit:index<3?0:index<7?1:2}));
+export const questionCount = lessons.reduce((sum,l)=>sum+l.questions.length,0);
+export const paths = {home:'index.html',...Object.fromEntries(lessons.map(l=>[l.id,`lessons/${l.number}/index.html`])),glossary:'glossary/index.html',sources:'sources/index.html'};

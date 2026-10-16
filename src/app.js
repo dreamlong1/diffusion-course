@@ -25,7 +25,7 @@
       if (saved && saved.version === 1) {
         for (const id of ids) {
           state.read[id] = saved.read?.[id] === true;
-          if (/^l[1-3]-[a-z-]+$/.test(saved.anchors?.[id] || '')) state.anchors[id] = saved.anchors[id];
+          if (new RegExp(`^l${id.split('-')[1]}-[a-z-]+$`).test(saved.anchors?.[id] || '')) state.anchors[id] = saved.anchors[id];
         }
         for (const [key, q] of questions) {
           const value = saved.answers?.[key];
@@ -62,7 +62,7 @@
   function updateProgress() {
     const count = [...ids].filter(id => state.read[id]).length;
     $$('[data-read-count]').forEach(n => n.textContent = String(count));
-    $$('[data-progress-fill]').forEach(n => { n.style.width = `${count / 3 * 100}%`; n.parentElement.setAttribute('aria-valuenow', String(count)); });
+    $$('[data-progress-fill]').forEach(n => { n.style.width = `${count / ids.size * 100}%`; n.parentElement.setAttribute('aria-valuenow', String(count)); });
     for (const lesson of data.lessons) {
       const answered = lesson.questions.filter(q => Object.hasOwn(state.answers, q.id)).length;
       const score = lesson.questions.filter(q => Object.hasOwn(state.answers, q.id) && correct(q, state.answers[q.id])).length;
@@ -75,7 +75,7 @@
       const id = state.last || 'lesson-1';
       const started = Object.keys(state.answers).length > 0 || [...ids].some(x => state.read[x]) || Boolean(state.anchors[id]);
       n.href = pageHref(started ? id : 'lesson-1', started ? state.anchors[id] || '' : '');
-      n.textContent = started ? `继续第 ${id.slice(-1)} 课 →` : '开始第一课 →';
+      n.textContent = started ? `继续第 ${id.split('-')[1]} 课 →` : '开始第一课 →';
     });
   }
   $$('[data-mark-read]').forEach(button => button.addEventListener('click', () => {

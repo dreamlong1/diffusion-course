@@ -22,7 +22,7 @@ test('publication checks detect stale builds, broken assets and soft 404s',async
  await new Promise(r=>server.listen(0,'127.0.0.1',r));
  t.after(()=>server.close());
  const url=`http://127.0.0.1:${server.address().port}/diffusion-course/`;
- await t.test('serves exactly the expected six pages and three resources',async()=>{assert.equal((await verifyPages(url,expected,{attempts:1})).files,9);});
+ await t.test('serves exactly the expected fifteen pages and four resources',async()=>{assert.equal((await verifyPages(url,expected,{attempts:1})).files,19);});
  for(const [variant,message] of [['stale',/revision/],['404',/HTTP 404/],['soft404',/bytes differ/],['mime',/Wrong JS MIME/]]){
   await t.test(`rejects ${variant}`,async()=>{mode=variant;await assert.rejects(()=>verifyPages(url,expected,{attempts:1}),message);});
  }

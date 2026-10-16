@@ -45,5 +45,50 @@
     }
     return out;
   }
-  root.DiffusionMath = Object.freeze({ cosine, mix, loss, estimate, format, gaussianArray });
+  function stats(values) {
+    if (!values.length) throw new RangeError('样本不能为空');
+    finite(...values);
+    const mean=values.reduce((a,b)=>a+b,0)/values.length;
+    return {mean,sd:Math.sqrt(values.reduce((a,b)=>a+(b-mean)**2,0)/values.length)};
+  }
+  function normalDensity(x,mean,sd) {
+    finite(x,mean,sd);if(sd<=0)throw new RangeError('标准差必须大于零');
+    return Math.exp(-.5*((x-mean)/sd)**2)/(sd*Math.sqrt(2*Math.PI));
+  }
+  function normalScore(x,mean,sd) {
+    finite(x,mean,sd);if(sd<=0)throw new RangeError('标准差必须大于零');
+    return -(x-mean)/(sd*sd);
+  }
+  function trainLinear(steps,rate) {
+    finite(steps,rate);if(!Number.isInteger(steps)||steps<0||steps>100||rate<=0||rate>=.4)throw new RangeError('无效的训练设置');
+    let weight=0;const history=[.625];
+    for(let i=0;i<steps;i++){weight-=rate*5*(weight-.5);history.push(2.5*(weight-.5)**2);}
+    return {weight,loss:history.at(-1),history};
+  }
+  function ddpmStep(xt,prediction,stage,z) {
+    finite(xt,prediction,stage,z);if(stage!==1&&stage!==2)throw new RangeError('教学步骤只能是 1 或 2');
+    const beta=stage===2?.25:.2,bar=stage===2?.6:.8,previous=stage===2?.8:1;
+    const mean=(xt-beta/Math.sqrt(1-bar)*prediction)/Math.sqrt(1-beta);
+    const sd=stage===1?0:Math.sqrt(beta*(1-previous)/(1-bar));
+    return {mean,sd,next:mean+sd*z};
+  }
+  function guidance(unconditional,conditional,scale){finite(unconditional,conditional,scale);return unconditional+scale*(conditional-unconditional);}
+  function linearFlow(z,y,time){finite(z,y,time);if(time<0||time>1)throw new RangeError('阶段越界');return {position:(1-time)*z+time*y,velocity:y-z};}
+  function eulerGrowth(steps){
+    if(!Number.isInteger(steps)||steps<1||steps>1000)throw new RangeError('无效的步数');
+    let x=1;const points=[{t:0,x}];for(let i=0;i<steps;i++){x+=x/steps;points.push({t:(i+1)/steps,x});}
+    return {estimate:x,exact:Math.E,error:Math.abs(Math.E-x),points};
+  }
+  function replan(position,goal,execute,horizon=6){
+    finite(position,goal,execute,horizon);if(!Number.isInteger(execute)||!Number.isInteger(horizon)||execute<1||execute>horizon||horizon>100)throw new RangeError('无效的执行长度');
+    const action=(goal-position)/horizon;
+    return {action,next:position+action*execute,plan:Array.from({length:horizon+1},(_,i)=>position+action*i)};
+  }
+  function biasStudy(time,bias){
+    finite(time,bias);const {alpha,sigma}=cosine(time),noise=gaussianArray(5,731),clean=[-2,-1,0,1,2];
+    const reconstructed=clean.map((x,i)=>estimate(mix(x,alpha,sigma,noise[i]),alpha,sigma,noise[i]+bias));
+    const error=reconstructed.some(x=>x===null)?null:reconstructed.reduce((sum,x,i)=>sum+(x-clean[i])**2,0)/clean.length;
+    return {alpha,sigma,loss:bias*bias,error,clean,reconstructed};
+  }
+  root.DiffusionMath = Object.freeze({ cosine, mix, loss, estimate, format, gaussianArray, stats, normalDensity, normalScore, trainLinear, ddpmStep, guidance, linearFlow, eulerGrowth, replan, biasStudy });
 })(globalThis);
